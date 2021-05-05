@@ -624,6 +624,7 @@ class MPCTensor(CrypTensor):
             dim, torch.tensor(x.size(dim) - 1, device=self.device)
         )
         r = MPCTensor.rand(max_weight.size(), device=self.device) * max_weight
+        r = r.abs() # Temp Bug Fix
 
         gt = x.gt(r, _scale=False)
         shifted = gt.roll(1, dims=dim)

@@ -14,6 +14,7 @@ import torch
 import torch.onnx.symbolic_helper as sym_help
 import torch.onnx.symbolic_registry as sym_registry
 import torch.onnx.utils
+import numpy
 from onnx import numpy_helper
 
 from . import module
@@ -148,7 +149,7 @@ class FromOnnx:
         self.onnx_model = onnx_model
 
         self.all_parameters = {
-            t.name: torch.from_numpy(numpy_helper.to_array(t))
+            t.name: torch.from_numpy(numpy.copy(numpy_helper.to_array(t)))
             for t in onnx_model.graph.initializer
         }
 

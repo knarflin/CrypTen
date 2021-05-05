@@ -29,7 +29,7 @@ enable_grad = CrypTensor.enable_grad
 set_grad_enabled = CrypTensor.set_grad_enabled
 
 
-def init(party_name=None, device=None):
+def init(party_name=None, device=None, fixseed=True):
     """
     Initialize CrypTen. It will initialize communicator, setup party
     name for file save / load, and setup seeds for Random Number Generatiion.
@@ -57,7 +57,7 @@ def init(party_name=None, device=None):
 
     # Setup seeds for Random Number Generation
     if comm.get().get_rank() < comm.get().get_world_size():
-        _setup_przs(device=device)
+        _setup_przs(device=device, fixseed=fixseed)
         if crypten.mpc.ttp_required():
             crypten.mpc.provider.ttp_provider.TTPClient._init()
 
@@ -171,7 +171,7 @@ def is_encrypted_tensor(obj):
     return isinstance(obj, CrypTensor)
 
 
-def _setup_przs(device=None):
+def _setup_przs(device=None, fixseed=True):
     """
     Generate shared random seeds to generate pseudo-random sharings of
     zero. The random seeds are shared such that each process shares
@@ -207,7 +207,12 @@ def _setup_przs(device=None):
     # forked processes.
     import numpy
 
-    numpy.random.seed(seed=None)
+    # numpy.random.seed(seed=None)
+    if fixseed == True:
+        numpy.random.seed(seed=comm.get().get_rank())
+        torch.manual_seed(seed=0)
+    else:
+        numpy.random.seed(seed=None)
     next_seed = torch.tensor(numpy.random.randint(-(2 ** 63), 2 ** 63 - 1, (1,)))
     prev_seed = torch.LongTensor([0])  # placeholder
 

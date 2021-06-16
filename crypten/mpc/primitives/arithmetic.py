@@ -8,6 +8,7 @@
 from functools import reduce
 
 import crypten.communicator as comm
+import crypten.communicator.libpympi_communicator as libpympi_comm # For research
 
 # dependencies:
 import torch
@@ -264,7 +265,8 @@ class ArithmeticSharedTensor(object):
         ), f"Invalid input type into reveal {type(tensor_or_list)}"
         shares = [tensor.share for tensor in tensor_or_list]
         if dst is None:
-            return comm.get().all_reduce(shares, batched=True)
+            # return comm.get().all_reduce(shares, batched=True)
+            return libpympi_comm.mpi_all_reduce(shares, batched=True) # For Research
         else:
             return comm.get().reduce(shares, dst=dst, batched=True)
 
@@ -272,7 +274,8 @@ class ArithmeticSharedTensor(object):
         """Decrypts the tensor without any downscaling."""
         tensor = self.share.clone()
         if dst is None:
-            return comm.get().all_reduce(tensor)
+            # return comm.get().all_reduce(tensor)
+            return libpympi_comm.mpi_all_reduce(tensor) # For Research
         else:
             return comm.get().reduce(tensor, dst=dst)
 

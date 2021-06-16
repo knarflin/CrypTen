@@ -39,9 +39,8 @@ def tensor_allreduce(tensor):
 def mpi_all_reduce(input, batched=False):
     """Reduces the input data across all parties; all get the final result."""
     if batched:
-        assert isinstance(
-            input, list), "batched reduce input must be a list"
-	result = []
+        assert isinstance( input, list), "batched reduce input must be a list"
+        result = []
         for x in input:
             result += [tensor_allreduce(x.data)]
     else:

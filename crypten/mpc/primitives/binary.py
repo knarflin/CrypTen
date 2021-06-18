@@ -6,6 +6,7 @@
 # LICENSE file in the root directory of this source tree.
 
 import crypten.communicator as comm
+import crypten.communicator.libpympi_communicator as libpympi_comm # For research
 
 # dependencies:
 import torch
@@ -361,7 +362,8 @@ class BinarySharedTensor(object):
         shares = [tensor.share for tensor in tensor_or_list]
         op = torch.distributed.ReduceOp.BXOR
         if dst is None:
-            return comm.get().all_reduce(shares, op=op, batched=True)
+            # return comm.get().all_reduce(shares, op=op, batched=True)
+            return libpympi_comm.mpi_all_reduce_bxor(shares, batched=True) # For Research
         else:
             return comm.get().reduce(shares, dst=dst, op=op, batched=True)
 
@@ -369,7 +371,8 @@ class BinarySharedTensor(object):
         """Get plaintext without any downscaling"""
         op = torch.distributed.ReduceOp.BXOR
         if dst is None:
-            return comm.get().all_reduce(self.share, op=op)
+            # return comm.get().all_reduce(self.share, op=op)
+            return libpympi_comm.mpi_all_reduce_bxor(self.share) # For Research
         else:
             return comm.get().reduce(self.share, dst=dst, op=op)
 

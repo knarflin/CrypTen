@@ -266,7 +266,7 @@ class ArithmeticSharedTensor(object):
         shares = [tensor.share for tensor in tensor_or_list]
         if dst is None:
             # return comm.get().all_reduce(shares, batched=True)
-            return libpympi_comm.mpi_all_reduce(shares, batched=True) # For Research
+            return libpympi_comm.mpi_all_reduce_sum(shares, batched=True) # For Research
         else:
             return comm.get().reduce(shares, dst=dst, batched=True)
 
@@ -275,7 +275,7 @@ class ArithmeticSharedTensor(object):
         tensor = self.share.clone()
         if dst is None:
             # return comm.get().all_reduce(tensor)
-            return libpympi_comm.mpi_all_reduce(tensor) # For Research
+            return libpympi_comm.mpi_all_reduce_sum(tensor) # For Research
         else:
             return comm.get().reduce(tensor, dst=dst)
 

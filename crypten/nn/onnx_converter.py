@@ -295,7 +295,7 @@ class FromOnnx:
         elif attr.HasField("s"):  # string attribute
             return attr.s  # TODO: Sanitize string.
         elif attr.HasField("t"):  # tensor attribute
-            return torch.from_numpy(numpy_helper.to_array(attr.t))
+            return torch.from_numpy(numpy.copy(numpy_helper.to_array(attr.t)))
         elif len(attr.ints) > 0:
             return list(attr.ints)
         elif len(attr.floats) > 0:

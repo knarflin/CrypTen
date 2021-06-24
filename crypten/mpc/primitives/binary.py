@@ -361,6 +361,8 @@ class BinarySharedTensor(object):
         ), f"Invalid input type into reveal {type(tensor_or_list)}"
         shares = [tensor.share for tensor in tensor_or_list]
         op = torch.distributed.ReduceOp.BXOR
+        if comm.get().get_world_size() == 1: # For Research
+            return shares
         if dst is None:
             # return comm.get().all_reduce(shares, op=op, batched=True)
             return libpympi_comm.mpi_all_reduce_bxor(shares, batched=True) # For Research
@@ -370,6 +372,8 @@ class BinarySharedTensor(object):
     def reveal(self, dst=None):
         """Get plaintext without any downscaling"""
         op = torch.distributed.ReduceOp.BXOR
+        if comm.get().get_world_size() == 1: # For Research
+            return self.share
         if dst is None:
             # return comm.get().all_reduce(self.share, op=op)
             return libpympi_comm.mpi_all_reduce_bxor(self.share) # For Research

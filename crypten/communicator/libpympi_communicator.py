@@ -32,7 +32,6 @@ class LibpympiSingleton:
 
 
 def _tensor_all_reduce_sum(tensor):
-    # a = torch.randint(low=0, high=2**63-1, size=(2, 3), dtype=torch.int64)
     nparray = tensor.cpu().detach().numpy()
     npbytes = nparray.tobytes()
     npshape = nparray.shape
@@ -46,7 +45,6 @@ def _tensor_all_reduce_sum(tensor):
 
 
 def _tensor_all_reduce_bxor(tensor):
-    # a = torch.randint(low=0, high=2**63-1, size=(2, 3), dtype=torch.int64)
     nparray = tensor.cpu().detach().numpy()
     npbytes = nparray.tobytes()
     npshape = nparray.shape

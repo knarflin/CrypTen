@@ -264,6 +264,10 @@ class ArithmeticSharedTensor(object):
             tensor_or_list, list
         ), f"Invalid input type into reveal {type(tensor_or_list)}"
         shares = [tensor.share for tensor in tensor_or_list]
+
+        if comm.get().get_world_size() == 1: # For Research
+            return shares
+
         if dst is None:
             # return comm.get().all_reduce(shares, batched=True)
             return libpympi_comm.mpi_all_reduce_sum(shares, batched=True) # For Research
@@ -273,6 +277,10 @@ class ArithmeticSharedTensor(object):
     def reveal(self, dst=None):
         """Decrypts the tensor without any downscaling."""
         tensor = self.share.clone()
+
+        if comm.get().get_world_size() == 1: # For Research
+            return tensor
+
         if dst is None:
             # return comm.get().all_reduce(tensor)
             return libpympi_comm.mpi_all_reduce_sum(tensor) # For Research

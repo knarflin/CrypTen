@@ -627,7 +627,7 @@ class Graph(Container):
         if input_names is not None:
             self._graph[name] = input_names
 
-    def forward(self, input):
+    def forward(self, input, enable_layer_timing=False, repeat_time=1):
         # keep track of all values that have been computed:
         values = {self.input_name: input}
         computed = {key: False for key in self._graph.keys()}
@@ -659,7 +659,15 @@ class Graph(Container):
             input = [values[name] for name in self._graph[node_to_compute]]
             if len(input) == 1:
                 input = input[0]  # unpack iterable if possible
-            output = self._modules[node_to_compute](input)
+            if enable_layer_timing:
+                import time
+                t1 = time.time()
+                for t in range(repeat_time):
+                    output = self._modules[node_to_compute](input)
+                t2 = time.time()
+                print(f"{node_to_compute}, {self._modules[node_to_compute]}: {repeat_time} in {t2-t1}s, avg = {(t2-t1)/repeat_time}s",)
+            else:
+                output = self._modules[node_to_compute](input)
             values[node_to_compute] = output
             _mark_as_computed(node_to_compute)
 

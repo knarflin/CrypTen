@@ -32,6 +32,10 @@ class LibpympiSingleton:
 
 
 def _tensor_all_reduce_sum(tensor):
+    from crypten import communicator as comm
+    if comm.get().get_rank() == 0:
+        print("_tensor_all_reduce_sum got tensor size =",
+              tensor.size(), "type =", tensor.dtype)
     nparray = tensor.cpu().detach().numpy()
     npbytes = nparray.tobytes()
     npshape = nparray.shape
@@ -45,6 +49,11 @@ def _tensor_all_reduce_sum(tensor):
 
 
 def _tensor_all_reduce_bxor(tensor):
+    from crypten import communicator as comm
+    if comm.get().get_rank() == 0:
+        print("_tensor_all_reduce_bxor got tensor size =",
+              tensor.size(), "type =", tensor.dtype)
+
     nparray = tensor.cpu().detach().numpy()
     npbytes = nparray.tobytes()
     npshape = nparray.shape

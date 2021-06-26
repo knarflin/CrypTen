@@ -666,7 +666,7 @@ class Graph(Container):
                     output = self._modules[node_to_compute](input)
                 t2 = time.time()
                 from crypten import communicator as comm
-                if comm.get().get_rank == 0:
+                if comm.get().get_rank() == 0:
                     print(f"{node_to_compute}, {self._modules[node_to_compute]}: {repeat_time} in {t2-t1}s, avg = {(t2-t1)/repeat_time}s",)
             else:
                 output = self._modules[node_to_compute](input)

@@ -189,13 +189,7 @@ class DistributedCommunicator(Communicator):
             reqs = []
             result = [x.clone() for x in input]
             for tensor in result:
-                reqs.append(
-                    dist.all_reduce(
-                        tensor.data, op=op, group=self.main_group, async_op=True
-                    )
-                )
-            for req in reqs:
-                req.wait()
+                dist.all_reduce(tensor.data, op=op, group=self.main_group, async_op=False)
         else:
             assert torch.is_tensor(
                 input.data

@@ -76,7 +76,7 @@ def mpi_all_reduce_sum(input, batched=False):
         assert torch.is_tensor(
             input.data
         ), "unbatched input for reduce must be a torch tensor"
-        if np.prod(list(x.shape)) <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
+        if np.prod(list(input.shape)) <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
             result = _tensor_all_reduce_sum(input.data)
         else:
             result = comm.get().all_reduce(input.data)

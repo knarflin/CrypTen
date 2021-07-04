@@ -69,8 +69,8 @@ def mpi_all_reduce_sum(input, batched=False):
         assert isinstance(input, list), "batched reduce input must be a list"
         result = []
         for x in input:
-            element_count = np.prod(list(x.shape))
-            if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
+            # element_count = np.prod(list(x.shape))
+            if x.nelemtent() <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
                 result += [_tensor_all_reduce_sum(x.data)]
             else:
                 # result += [comm.get().all_reduce(x.data)]
@@ -81,8 +81,8 @@ def mpi_all_reduce_sum(input, batched=False):
         assert torch.is_tensor(
             input.data
         ), "unbatched input for reduce must be a torch tensor"
-        element_count = np.prod(list(input.shape))
-        if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
+        # element_count = np.prod(list(input.shape))
+        if input.nelement() <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
             result = _tensor_all_reduce_sum(input.data)
         else:
             # result = comm.get().all_reduce(input.data)
@@ -98,8 +98,8 @@ def mpi_all_reduce_bxor(input, batched=False):
         result = []
         for x in input:
             # result += [_tensor_all_reduce_bxor(x.data)]
-            element_count = np.prod(list(x.shape))
-            if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
+            # element_count = np.prod(list(x.shape))
+            if x.nelement() <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
                 result += [_tensor_all_reduce_sum(x.data)]
             else:
                 # result += [comm.get().all_reduce(x.data, op=torch.distributed.ReduceOp.BXOR)]
@@ -111,8 +111,8 @@ def mpi_all_reduce_bxor(input, batched=False):
             input.data
         ), "unbatched input for reduce must be a torch tensor"
         # result = _tensor_all_reduce_bxor(input.data)
-        element_count = np.prod(list(input.shape))
-        if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
+        # element_count = np.prod(list(input.shape))
+        if input.nelement() <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
             result = _tensor_all_reduce_bxor(input.data)
         else:
             # result = comm.get().all_reduce(input.data, op=torch.distributed.ReduceOp.BXOR)

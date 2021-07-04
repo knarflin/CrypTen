@@ -70,7 +70,7 @@ def mpi_all_reduce_sum(input, batched=False):
         result = []
         for x in input:
             # element_count = np.prod(list(x.shape))
-            if x.nelemtent() <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
+            if x.nelement() <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
                 result += [_tensor_all_reduce_sum(x.data)]
             else:
                 # result += [comm.get().all_reduce(x.data)]

@@ -71,8 +71,10 @@ def mpi_all_reduce_sum(input, batched=False):
             if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
                 result += [_tensor_all_reduce_sum(x.data)]
             else:
-                result += [comm.get().all_reduce(x.data)]
-
+                # result += [comm.get().all_reduce(x.data)]
+                tensor = x.clone()
+                dist.all_reduce(tensor.data, op=torch.distributed.ReduceOp.SUM, group=comm.get().main_group, async_op=False)
+                result += [tensor]
     else:
         assert torch.is_tensor(
             input.data
@@ -81,7 +83,9 @@ def mpi_all_reduce_sum(input, batched=False):
         if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
             result = _tensor_all_reduce_sum(input.data)
         else:
-            result = comm.get().all_reduce(input.data)
+            # result = comm.get().all_reduce(input.data)
+            result = input.clone()
+            dist.all_reduce(result.data, op=torch.distributed.ReduceOp.SUM, group=comm.get().main_group, async_op=False)
     return result
 
 
@@ -96,7 +100,10 @@ def mpi_all_reduce_bxor(input, batched=False):
             if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
                 result += [_tensor_all_reduce_sum(x.data)]
             else:
-                result += [comm.get().all_reduce(x.data, op=torch.distributed.ReduceOp.BXOR)]
+                # result += [comm.get().all_reduce(x.data, op=torch.distributed.ReduceOp.BXOR)]
+                tensor = x.clone()
+                dist.all_reduce(tensor.data, op=torch.distributed.ReduceOp.BXOR, group=comm.get().main_group, async_op=False)
+                result += [tensor]
     else:
         assert torch.is_tensor(
             input.data
@@ -106,7 +113,9 @@ def mpi_all_reduce_bxor(input, batched=False):
         if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
             result = _tensor_all_reduce_bxor(input.data)
         else:
-            result = comm.get().all_reduce(input.data, op=torch.distributed.ReduceOp.BXOR)
+            # result = comm.get().all_reduce(input.data, op=torch.distributed.ReduceOp.BXOR)
+            result = input.clone()
+            dist.all_reduce(result.data, op=torch.distributed.ReduceOp.BXOR, group=comm.get().main_group, async_op=False)
     return result
 
 

@@ -2,10 +2,14 @@ import libpympi
 import torch
 import numpy as np
 import atexit
+import crypten.communicator as comm
 
 
 class LibpympiSingleton:
     _instance = None
+    AR_SIZE_THRESHOLD = 2**16 # Bytes
+    AR_ELEMENT_SIZE = 8 # Bytes
+    AR_ELEMENT_THRESHOLD =  AR_SIZE_THRESHOLD / AR_ELEMENT_SIZE
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -63,12 +67,19 @@ def mpi_all_reduce_sum(input, batched=False):
         assert isinstance(input, list), "batched reduce input must be a list"
         result = []
         for x in input:
-            result += [_tensor_all_reduce_sum(x.data)]
+            if np.prod(list(x.shape)) <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
+                result += [_tensor_all_reduce_sum(x.data)]
+            else:
+                result += [comm.get().all_reduce(x.data)]
+
     else:
         assert torch.is_tensor(
             input.data
         ), "unbatched input for reduce must be a torch tensor"
-        result = _tensor_all_reduce_sum(input.data)
+        if np.prod(list(x.shape)) <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
+            result = _tensor_all_reduce_sum(input.data)
+        else:
+            result = comm.get().all_reduce(input.data)
     return result
 
 

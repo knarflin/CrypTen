@@ -70,7 +70,6 @@ def mpi_all_reduce_sum(input, batched=False):
             element_count = np.prod(list(x.shape))
             if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
                 result += [_tensor_all_reduce_sum(x.data)]
-                print(element_count, LibpympiSingleton.AR_ELEMENT_THRESHOLD) # debug point
             else:
                 result += [comm.get().all_reduce(x.data)]
 
@@ -81,7 +80,6 @@ def mpi_all_reduce_sum(input, batched=False):
         element_count = np.prod(list(input.shape))
         if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
             result = _tensor_all_reduce_sum(input.data)
-            print(element_count, LibpympiSingleton.AR_ELEMENT_THRESHOLD)
         else:
             result = comm.get().all_reduce(input.data)
     return result
@@ -97,7 +95,6 @@ def mpi_all_reduce_bxor(input, batched=False):
             element_count = np.prod(list(x.shape))
             if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
                 result += [_tensor_all_reduce_sum(x.data)]
-                print(element_count, LibpympiSingleton.AR_ELEMENT_THRESHOLD) # debug point
             else:
                 result += [comm.get().all_reduce(x.data, op=torch.distributed.ReduceOp.BXOR)]
     else:
@@ -108,7 +105,6 @@ def mpi_all_reduce_bxor(input, batched=False):
         element_count = np.prod(list(input.shape))
         if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
             result = _tensor_all_reduce_bxor(input.data)
-            print(element_count, LibpympiSingleton.AR_ELEMENT_THRESHOLD) # debug point
         else:
             result = comm.get().all_reduce(input.data, op=torch.distributed.ReduceOp.BXOR)
     return result

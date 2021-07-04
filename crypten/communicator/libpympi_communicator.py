@@ -9,7 +9,7 @@ class LibpympiSingleton:
     _instance = None
     AR_SIZE_THRESHOLD = 2**16 # Bytes
     AR_ELEMENT_SIZE = 8 # Bytes
-    AR_ELEMENT_THRESHOLD =  AR_SIZE_THRESHOLD / AR_ELEMENT_SIZE
+    AR_ELEMENT_THRESHOLD =  AR_SIZE_THRESHOLD // AR_ELEMENT_SIZE
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -68,9 +68,9 @@ def mpi_all_reduce_sum(input, batched=False):
         result = []
         for x in input:
             element_count = np.prod(list(x.shape))
-            print(element_count, LibpympiSingleton.AR_ELEMENT_THRESHOLD) # debug point
             if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
                 result += [_tensor_all_reduce_sum(x.data)]
+                print(element_count, LibpympiSingleton.AR_ELEMENT_THRESHOLD) # debug point
             else:
                 result += [comm.get().all_reduce(x.data)]
 
@@ -79,9 +79,9 @@ def mpi_all_reduce_sum(input, batched=False):
             input.data
         ), "unbatched input for reduce must be a torch tensor"
         element_count = np.prod(list(input.shape))
-        print(element_count, LibpympiSingleton.AR_ELEMENT_THRESHOLD)
         if element_count <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
             result = _tensor_all_reduce_sum(input.data)
+            print(element_count, LibpympiSingleton.AR_ELEMENT_THRESHOLD)
         else:
             result = comm.get().all_reduce(input.data)
     return result

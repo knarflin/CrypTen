@@ -3,6 +3,8 @@ import torch
 import numpy as np
 import atexit
 import crypten.communicator as comm
+import torch.distributed as dist
+from torch.distributed import ReduceOp
 
 
 class LibpympiSingleton:
@@ -73,7 +75,7 @@ def mpi_all_reduce_sum(input, batched=False):
             else:
                 # result += [comm.get().all_reduce(x.data)]
                 tensor = x.clone()
-                dist.all_reduce(tensor.data, op=torch.distributed.ReduceOp.SUM, group=comm.get().main_group, async_op=False)
+                dist.all_reduce(tensor.data, op=ReduceOp.SUM, group=comm.get().main_group, async_op=False)
                 result += [tensor]
     else:
         assert torch.is_tensor(
@@ -85,7 +87,7 @@ def mpi_all_reduce_sum(input, batched=False):
         else:
             # result = comm.get().all_reduce(input.data)
             result = input.clone()
-            dist.all_reduce(result.data, op=torch.distributed.ReduceOp.SUM, group=comm.get().main_group, async_op=False)
+            dist.all_reduce(result.data, op=ReduceOp.SUM, group=comm.get().main_group, async_op=False)
     return result
 
 
@@ -102,7 +104,7 @@ def mpi_all_reduce_bxor(input, batched=False):
             else:
                 # result += [comm.get().all_reduce(x.data, op=torch.distributed.ReduceOp.BXOR)]
                 tensor = x.clone()
-                dist.all_reduce(tensor.data, op=torch.distributed.ReduceOp.BXOR, group=comm.get().main_group, async_op=False)
+                dist.all_reduce(tensor.data, op=ReduceOp.BXOR, group=comm.get().main_group, async_op=False)
                 result += [tensor]
     else:
         assert torch.is_tensor(
@@ -115,7 +117,7 @@ def mpi_all_reduce_bxor(input, batched=False):
         else:
             # result = comm.get().all_reduce(input.data, op=torch.distributed.ReduceOp.BXOR)
             result = input.clone()
-            dist.all_reduce(result.data, op=torch.distributed.ReduceOp.BXOR, group=comm.get().main_group, async_op=False)
+            dist.all_reduce(result.data, op=ReduceOp.BXOR, group=comm.get().main_group, async_op=False)
     return result
 
 

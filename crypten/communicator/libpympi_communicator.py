@@ -9,7 +9,7 @@ from torch.distributed import ReduceOp
 
 class LibpympiSingleton:
     _instance = None
-    AR_SIZE_THRESHOLD = 80000 * 0  # 2**16 # Bytes
+    AR_SIZE_THRESHOLD = 80000  # 2**16 # Bytes
     AR_ELEMENT_SIZE = 8  # Bytes
     AR_ELEMENT_THRESHOLD = AR_SIZE_THRESHOLD // AR_ELEMENT_SIZE
 
@@ -70,7 +70,7 @@ def mpi_all_reduce_sum(input, batched=False):
         result = []
         for x in input:
             # element_count = np.prod(list(x.shape))
-            if x.nelement() <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
+            if x.nelement() <= LibpympiSingleton.AR_ELEMENT_THRESHOLD * 0:
                 result += [_tensor_all_reduce_sum(x.data)]
             else:
                 # result += [comm.get().all_reduce(x.data)]
@@ -101,7 +101,7 @@ def mpi_all_reduce_bxor(input, batched=False):
         for x in input:
             # result += [_tensor_all_reduce_bxor(x.data)]
             # element_count = np.prod(list(x.shape))
-            if x.nelement() <= LibpympiSingleton.AR_ELEMENT_THRESHOLD:
+            if x.nelement() <= LibpympiSingleton.AR_ELEMENT_THRESHOLD * 0:
                 result += [_tensor_all_reduce_sum(x.data)]
             else:
                 # result += [comm.get().all_reduce(x.data, op=torch.distributed.ReduceOp.BXOR)]

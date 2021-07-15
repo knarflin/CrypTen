@@ -9,9 +9,9 @@ from torch.distributed import ReduceOp
 
 class LibpympiSingleton:
     _instance = None
-    AR_SIZE_THRESHOLD = 80000 # 2**16 # Bytes
-    AR_ELEMENT_SIZE = 8 # Bytes
-    AR_ELEMENT_THRESHOLD =  AR_SIZE_THRESHOLD // AR_ELEMENT_SIZE
+    AR_SIZE_THRESHOLD = 80000 * 10000  # 2**16 # Bytes
+    AR_ELEMENT_SIZE = 8  # Bytes
+    AR_ELEMENT_THRESHOLD = AR_SIZE_THRESHOLD // AR_ELEMENT_SIZE
 
     def __new__(cls, *args, **kwargs):
         if cls._instance is None:
@@ -75,7 +75,8 @@ def mpi_all_reduce_sum(input, batched=False):
             else:
                 # result += [comm.get().all_reduce(x.data)]
                 tensor = x.clone()
-                dist.all_reduce(tensor.data, op=ReduceOp.SUM, group=comm.get().main_group, async_op=False)
+                dist.all_reduce(tensor.data, op=ReduceOp.SUM,
+                                group=comm.get().main_group, async_op=False)
                 result += [tensor]
     else:
         assert torch.is_tensor(
@@ -87,7 +88,8 @@ def mpi_all_reduce_sum(input, batched=False):
         else:
             # result = comm.get().all_reduce(input.data)
             result = input.clone()
-            dist.all_reduce(result.data, op=ReduceOp.SUM, group=comm.get().main_group, async_op=False)
+            dist.all_reduce(result.data, op=ReduceOp.SUM,
+                            group=comm.get().main_group, async_op=False)
     return result
 
 
@@ -104,7 +106,8 @@ def mpi_all_reduce_bxor(input, batched=False):
             else:
                 # result += [comm.get().all_reduce(x.data, op=torch.distributed.ReduceOp.BXOR)]
                 tensor = x.clone()
-                dist.all_reduce(tensor.data, op=ReduceOp.BXOR, group=comm.get().main_group, async_op=False)
+                dist.all_reduce(tensor.data, op=ReduceOp.BXOR,
+                                group=comm.get().main_group, async_op=False)
                 result += [tensor]
     else:
         assert torch.is_tensor(
@@ -117,7 +120,8 @@ def mpi_all_reduce_bxor(input, batched=False):
         else:
             # result = comm.get().all_reduce(input.data, op=torch.distributed.ReduceOp.BXOR)
             result = input.clone()
-            dist.all_reduce(result.data, op=ReduceOp.BXOR, group=comm.get().main_group, async_op=False)
+            dist.all_reduce(result.data, op=ReduceOp.BXOR,
+                            group=comm.get().main_group, async_op=False)
     return result
 
 

@@ -9,7 +9,7 @@ from torch.distributed import ReduceOp
 
 class LibpympiSingleton:
     _instance = None
-    AR_SIZE_THRESHOLD = 80000 * 10000  # 2**16 # Bytes
+    AR_SIZE_THRESHOLD = 80000 * 0  # 2**16 # Bytes
     AR_ELEMENT_SIZE = 8  # Bytes
     AR_ELEMENT_THRESHOLD = AR_SIZE_THRESHOLD // AR_ELEMENT_SIZE
 
